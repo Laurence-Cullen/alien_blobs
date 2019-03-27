@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Board():
+class Board:
     """
     9x9 grid board
     """
