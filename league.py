@@ -53,7 +53,10 @@ class League:
                 board=Board(board_size=self._board_size)
             )
 
-            score_one, score_two = game.play_game()
+            game.play_game()
+
+            score_one = game.player_one_score
+            score_two = game.player_two_score
 
             normalised_score_one = score_one / (score_one + score_two)
             normalised_score_two = score_two / (score_one + score_two)
