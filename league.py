@@ -3,8 +3,8 @@ import random
 from itertools import combinations
 
 import elo
-from game import Game
 from board import Board
+from game import Game
 
 
 class LeagueMember:

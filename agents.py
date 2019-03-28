@@ -1,6 +1,7 @@
 import random
-from keras.models import model_from_yaml, Sequential
+
 from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
+from keras.models import model_from_yaml, Sequential
 
 
 class Player:

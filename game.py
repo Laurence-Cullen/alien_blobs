@@ -1,10 +1,10 @@
-from board import Board
-from agents import RandomPlayer
 import contextlib
+
+from agents import RandomPlayer
+from board import Board
 
 
 class Game:
-
     def __init__(self, board, player_one, player_two, game_length=20):
         self.board = board
         self.game_length = game_length
