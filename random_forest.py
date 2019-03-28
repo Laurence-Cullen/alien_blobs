@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor
 from time import time
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import mean_squared_error
 
 data = pd.read_csv(Path("path/to/data"))
 
@@ -21,9 +23,28 @@ class RandomForestRegressorExtended(RandomForestRegressor):
             max_features, max_leaf_nodes, min_impurity_decrease, min_impurity_split, bootstrap, oob_score, n_jobs,
             random_state, verbose, warm_start)
 
-    def train_model(self, train_data):
+    def skfold_fit_predict(self, train_data, train_targets):
+        # create skfold
+        skfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+        fold_scores = []
         start = time()  # track runtime
-        self.fit(train_data[0], train_data[1])
+
+        for i, (train_index, test_index) in enumerate(skfold.split(train_data, train_targets)):
+            X_train, X_valid = train_data.iloc[train_index], train_data.iloc[test_index]
+            y_train, y_valid = train_targets.iloc[train_index], train_targets.iloc[test_index]
+
+            self.fit(X_train, y_train)  # fit model
+
+            # Score evaluation with given metric 
+            mean_squared_error_score = mean_squared_error(y_valid, self.predict(X_valid))
+            fold_scores.append(mean_squared_error_score)
+
         end = time()  # track runtime
         runtime = end - start
-        print("Runtime: {:.4f}s", runtime)
+        print("Model fold scores: {}".format(fold_scores))
+        return print("Model average mean squared error score: {:.4f}   Runtime: {:.2f}s \n".format(
+                                                                                                      np.mean(
+                                                                                                          fold_scores),
+                                                                                                      runtime))
+
