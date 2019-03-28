@@ -4,6 +4,7 @@ from itertools import combinations
 
 import elo
 from game import Game
+from board import Board
 
 
 class LeagueMember:
@@ -17,10 +18,11 @@ class LeagueMember:
 
 
 class League:
-    def __init__(self, players):
+    def __init__(self, players, board_size=9):
         self._players = players
         self._members = {}
         self._game_history = []
+        self._board_size = board_size
 
         for player in self._players:
             self._members[player.name] = LeagueMember(player)
@@ -30,7 +32,7 @@ class League:
     def add_player(self, player):
         self._players.append(player)
 
-    def play_games(self, games=10, rounds_per_game=10):
+    def play_games(self, games=10):
         """
         Pick random members of the league and get them to play each other,
         updating their ELO after each game is completed.
@@ -45,11 +47,16 @@ class League:
 
             member_one, member_two = self.get_random_members()
 
-            game = Game(player_one=member_one.player, player_two=member_two.player)
-            score_one, score_two = game.play_game(rounds=rounds_per_game)
+            game = Game(
+                player_one=member_one.player,
+                player_two=member_two.player,
+                board=Board(board_size=self._board_size)
+            )
 
-            normalised_score_one = score_one / rounds_per_game
-            normalised_score_two = score_two / rounds_per_game
+            score_one, score_two = game.play_game()
+
+            normalised_score_one = score_one / (score_one + score_two)
+            normalised_score_two = score_two / (score_one + score_two)
 
             elo.update_elo(
                 member_one=member_one,
