@@ -53,8 +53,10 @@ def main():
     board = Board()
     player_one = RandomPlayer(name='one')
     player_two = RandomPlayer(name='two')
-    game = Game(board, player_one, player_two)
+    game = Game(board, player_one, player_two, game_length = 40)
+    print(game.board)
     game.play_game()
+    print(game.board)
     print(game.player_one_score, game.player_two_score)
 
 
