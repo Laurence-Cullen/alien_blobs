@@ -1,7 +1,7 @@
 import random
 import numpy as np
-import contextlib
 from numba import jit
+
 
 class Player:
     def __init__(self, name, player_id=None):
@@ -56,34 +56,27 @@ class ProximityRandomPlayer(Player):
             if move[1] == board.board_size - 1:
                 at_bottom = True
 
-
-            with contextlib.suppress(IndexError):
-                if board[move[0]+1][move[1]][1-player_id] == 1:
+            if not at_left:
+                if board[move[0] - 1][move[1]][1 - player_id] == 1:
                     legal_moves_adjacent_to_opponent[moves_added] = move
                     moves_added += 1
 
-            with contextlib.suppress(IndexError):
-                if board[move[0]-1][move[1]][1-player_id] == 1:
+            if not at_right:
+                if board[move[0] + 1][move[1]][1 - player_id] == 1:
                     legal_moves_adjacent_to_opponent[moves_added] = move
                     moves_added += 1
 
-            with contextlib.suppress(IndexError):
-                if board[move[0]][move[1]+1][1-player_id] == 1:
+            if not at_top:
+                if board[move[0]][move[1] + 1][1 - player_id] == 1:
                     legal_moves_adjacent_to_opponent[moves_added] = move
                     moves_added += 1
 
-            with contextlib.suppress(IndexError):
-                if board[move[0]][move[1]-1][1-player_id] == 1:
+            if not at_bottom:
+                if board[move[0]][move[1] - 1][1 - player_id] == 1:
                     legal_moves_adjacent_to_opponent[moves_added] = move
                     moves_added += 1
 
         return legal_moves_adjacent_to_opponent[0:moves_added]
-
-
-
-
-
-
 
     def next_move(self, board):
         proximity_moves = board.legal_moves_adjacent_to_player(1 - self.player_id)
