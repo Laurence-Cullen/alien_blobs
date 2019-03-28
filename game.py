@@ -5,7 +5,7 @@ from board import Board
 
 
 class Game:
-    def __init__(self, board, player_one, player_two, game_length=20):
+    def __init__(self, board, player_one, player_two, turns=20):
         self.board = board
 
         # record of the sequential moves making up the game in form {move_num: [i, j, player_id]}
@@ -14,12 +14,11 @@ class Game:
         # tracks how many moves have been made
         self._move_counter = 0
 
-        self.game_length = game_length
+        self.game_length = turns
         self.player_one = player_one
         self.player_one.set_id(0)
         self.player_two = player_two
         self.player_two.set_id(1)
-        self.game_length = game_length
 
         self.winner = None
 
@@ -86,12 +85,16 @@ class Game:
 
         return board
 
+    @property
+    def total_moves(self):
+        return len(self._moves)
+
 
 def main():
     board = Board()
     player_one = ProximityRandomPlayer(name='proximity')
     player_two = RandomPlayer(name='two')
-    game = Game(board, player_one, player_two, game_length=40)
+    game = Game(board, player_one, player_two, turns=40)
     print(game.board)
     game.play_game()
     print(game.board)
