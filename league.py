@@ -4,7 +4,6 @@ from itertools import combinations
 
 import agents
 import elo
-from agents import RandomPlayer
 from board import Board
 from game import Game
 
@@ -23,7 +22,9 @@ class League:
     def __init__(self, players, board_size=9):
         self._players = players
         self._members = {}
-        self._game_history = []
+        self._games = {}
+        self._game_counter = 0
+
         self._board_size = board_size
 
         for player in self._players:
@@ -34,30 +35,39 @@ class League:
     def add_player(self, player):
         self._players.append(player)
 
-    def play_games(self, game_length=40):
+    def play_games(self, number_of_games=40, turns_per_game=20):
         """
         Pick random members of the league and get them to play each other,
         updating their ELO after each game is completed.
         """
 
-        total_games = game_length
+        total_games = number_of_games
 
-        while game_length > 0:
-            if game_length % (int(total_games / 10) + 1) == 0:
-                print(f'{((total_games - game_length) / total_games) * 100:.1f} percent complete')
+        while number_of_games > 0:
+            if number_of_games % (int(total_games / 10) + 1) == 0:
+                print(f'{((total_games - number_of_games) / total_games) * 100:.1f} percent complete')
 
             member_one, member_two = self.get_random_members()
 
             game = Game(
                 player_one=member_one.player,
                 player_two=member_two.player,
-                board=Board(board_size=self._board_size)
+                board=Board(board_size=self._board_size),
+                turns=turns_per_game
             )
 
             game.play_game()
 
             score_one = game.player_one_score
             score_two = game.player_two_score
+
+            if score_one > score_two:
+                game.winner = game.player_one.player_id
+            elif score_two > score_one:
+                game.winner = game.player_two.player_id
+            else:
+                # in the case of a draw
+                game.winner = -1
 
             print(score_one, score_two)
 
@@ -75,9 +85,10 @@ class League:
                 score_two=normalised_score_two
             )
 
-            self._game_history.append(game)
+            self._games[self._game_counter] = game
+            self._game_counter += 1
 
-            game_length -= 1
+            number_of_games -= 1
 
     def get_random_members(self):
         """
@@ -85,6 +96,10 @@ class League:
         """
 
         return random.sample(list(self._members.values()), 2)
+
+    @property
+    def games(self):
+        return self._games
 
     def __str__(self):
         lines = []
@@ -100,15 +115,15 @@ class League:
 def main():
     league = League(players=[
         agents.ProximityRandomPlayer(name='proximity'),
-        RandomPlayer(name='rand2'),
+        agents.RandomPlayer(name='rand2'),
     ])
-    league.play_games(game_length=10000)
+    league.play_games(number_of_games=10000)
 
     print(league)
 
 
 if __name__ == '__main__':
-    # 32.7 seconds current run time
+    # 11.6 seconds current run time
     # cProfile.run('main()')
 
     main()
