@@ -1,6 +1,10 @@
 import random
 import numpy as np
 
+import contextlib
+from numba import jit
+
+
 class Player:
     def __init__(self, name, player_id=None):
         self._name = name
@@ -30,6 +34,51 @@ class ProximityRandomPlayer(Player):
     """
     Plays on a random part of the board that is adjacent to opponent pieces if possible.
     """
+
+    @staticmethod
+    @jit(nopython=True)
+    def legal_moves_adjacent_to_opponent(player_id, board):
+        legal_moves = board.legal_moves()
+        legal_moves_adjacent_to_opponent = np.zeros(shape=legal_moves.shape, dtype=int)
+        moves_added = 0
+
+        for i in range(legal_moves.shape[0]):
+            move = legal_moves[i]
+            at_top = False
+            at_left = False
+            at_right = False
+            at_bottom = False
+
+            if move[0] == 0:
+                at_left = True
+            if move[0] == board.board_size - 1:
+                at_right = True
+            if move[1] == 0:
+                at_top = True
+            if move[1] == board.board_size - 1:
+                at_bottom = True
+
+            with contextlib.suppress(IndexError):
+                if board[move[0] + 1][move[1]][1 - player_id] == 1:
+                    legal_moves_adjacent_to_opponent[moves_added] = move
+                    moves_added += 1
+
+            with contextlib.suppress(IndexError):
+                if board[move[0] - 1][move[1]][1 - player_id] == 1:
+                    legal_moves_adjacent_to_opponent[moves_added] = move
+                    moves_added += 1
+
+            with contextlib.suppress(IndexError):
+                if board[move[0]][move[1] + 1][1 - player_id] == 1:
+                    legal_moves_adjacent_to_opponent[moves_added] = move
+                    moves_added += 1
+
+            with contextlib.suppress(IndexError):
+                if board[move[0]][move[1] - 1][1 - player_id] == 1:
+                    legal_moves_adjacent_to_opponent[moves_added] = move
+                    moves_added += 1
+
+        return legal_moves_adjacent_to_opponent[0:moves_added]
 
     def next_move(self, board):
         proximity_moves = board.legal_moves_adjacent_to_player(1 - self.player_id)
