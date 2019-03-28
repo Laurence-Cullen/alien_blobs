@@ -10,12 +10,13 @@ class Board:
 
     def __init__(self, board_size=9):
         self._board_size = board_size
-        self._board = np.zeros((board_size, board_size, 2), dtype=int)
+        self._board = np.zeros((board_size, board_size, 2), dtype=np.int8)
 
     @staticmethod
     @jit(nopython=True)
-    def legal_moves_processing(board, board_size, legal_moves_array):
+    def legal_moves(board, board_size):
         moves_added = 0
+        legal_moves_array = np.zeros(shape=(np.int8(board_size ** 2) - np.sum(board), 2), dtype=np.int8)
 
         for i in range(board_size):
             for j in range(board_size):
@@ -23,17 +24,6 @@ class Board:
                     legal_moves_array[moves_added][0] = i
                     legal_moves_array[moves_added][1] = j
                     moves_added += 1
-
-        return legal_moves_array
-
-    def legal_moves(self):
-        legal_moves_array = np.zeros(shape=(int(self._board_size ** 2 - np.sum(self._board)), 2), dtype=int)
-
-        legal_moves_array = self.legal_moves_processing(
-            board=self._board,
-            board_size=self._board_size,
-            legal_moves_array=legal_moves_array
-        )
 
         return legal_moves_array
 

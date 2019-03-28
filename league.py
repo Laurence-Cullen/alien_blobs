@@ -1,9 +1,8 @@
-import cProfile
 import collections
 import random
 from itertools import combinations
-import agents
 
+import agents
 import elo
 from agents import RandomPlayer
 from board import Board
@@ -110,6 +109,6 @@ def main():
 
 if __name__ == '__main__':
     # 32.7 seconds current run time
-    #cProfile.run('main()')
+    # cProfile.run('main()')
 
-     main()
+    main()

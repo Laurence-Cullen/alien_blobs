@@ -1,4 +1,5 @@
 import random
+
 import numpy as np
 from numba import jit
 
@@ -25,7 +26,8 @@ class RandomPlayer(Player):
     """
 
     def next_move(self, board):
-        return random.choice(board.legal_moves())
+        legal_moves = board.legal_moves(board=board.board, board_size=board.board_size)
+        return legal_moves[np.random.choice(legal_moves.shape[0])]
 
 
 class ProximityRandomPlayer(Player):
@@ -78,9 +80,14 @@ class ProximityRandomPlayer(Player):
         return legal_moves_adjacent_to_opponent[0:moves_added]
 
     def next_move(self, board):
-        proximity_moves = self.legal_moves_adjacent_to_opponent(self.player_id, board.board, board.legal_moves())
+        proximity_moves = self.legal_moves_adjacent_to_opponent(
+            self.player_id,
+            board.board,
+            board.legal_moves(board=board.board, board_size=board.board_size)
+        )
 
         if len(proximity_moves) > 0:
             return random.choice(proximity_moves)
         else:
-            return random.choice(board.legal_moves())
+            legal_moves = board.legal_moves(board=board.board, board_size=board.board_size)
+            return legal_moves[np.random.choice(legal_moves.shape[0])]
