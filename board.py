@@ -27,15 +27,6 @@ class Board:
 
         return legal_moves_array
 
-    # def legal_moves(self):
-    #
-    #     legal_moves_array = self.legal_moves_processing(
-    #         board=self._board,
-    #         board_size=self._board_size,
-    #     )
-    #
-    #     return legal_moves_array
-
     def update_board(self, move, player_id):
         if self._board[move[0]][move[1]][0] == 0 and self._board[move[0]][move[1]][1] == 0:
             self._board[move[0]][move[1]][player_id] = 1

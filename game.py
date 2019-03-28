@@ -1,6 +1,6 @@
 import contextlib
 
-from agents import RandomPlayer
+from agents import RandomPlayer, ProximityRandomPlayer
 from board import Board
 
 
@@ -89,7 +89,7 @@ class Game:
 
 def main():
     board = Board()
-    player_one = RandomPlayer(name='one')
+    player_one = ProximityRandomPlayer(name='proximity')
     player_two = RandomPlayer(name='two')
     game = Game(board, player_one, player_two, game_length=40)
     print(game.board)
