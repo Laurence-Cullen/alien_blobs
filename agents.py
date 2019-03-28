@@ -27,7 +27,8 @@ class RandomPlayer(Player):
     """
 
     def next_move(self, board):
-        return random.choice(board.legal_moves())
+        legal_moves = board.legal_moves(board=board.board, board_size=board.board_size)
+        return legal_moves[np.random.choice(legal_moves.shape[0])]
 
 
 class ProximityRandomPlayer(Player):
@@ -86,5 +87,5 @@ class ProximityRandomPlayer(Player):
         if len(proximity_moves) > 0:
             return proximity_moves[np.random.choice(proximity_moves.shape[0])]
         else:
-            legal_moves = board.legal_moves()
+            legal_moves = board.legal_moves(board=board.board, board_size=board.board_size)
             return legal_moves[np.random.choice(legal_moves.shape[0])]
