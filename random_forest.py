@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 from time import time
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
+import pickle
 
 data = pd.read_csv(Path("path/to/data"))
 
@@ -42,6 +43,11 @@ class RandomForestRegressorExtended(RandomForestRegressor):
 
         end = time()  # track runtime
         runtime = end - start
+
+        # save the model to disk
+        filename = 'random_forest_model.sav'
+        pickle.dump(self, open(filename, 'wb'))
+
         print("Model fold scores: {}".format(fold_scores))
         return print("Model average mean squared error score: {:.4f}   Runtime: {:.2f}s \n".format(
                                                                                                       np.mean(
