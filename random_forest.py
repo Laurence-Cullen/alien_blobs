@@ -3,13 +3,13 @@ import numpy as np
 from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor
 from time import time
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import KFold
 from sklearn.metrics import mean_squared_error
 import pickle
 
 
 class RandomForestRegressorExtended(RandomForestRegressor):
-    def __init__(self, n_estimators='warn', criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1,
+    def __init__(self, n_estimators='warn', criterion='mse', max_depth=None, min_samples_split=2, min_samples_leaf=1,
                  min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0,
                  min_impurity_split=None, bootstrap=True, oob_score=False, n_jobs=None, random_state=None, verbose=0,
                  warm_start=False):
@@ -23,11 +23,10 @@ class RandomForestRegressorExtended(RandomForestRegressor):
 
     def load_data(self, folder_path, board_size):
         folder_path = Path(folder_path)
-        draw_board_paths = folder_path.glob('-1/*.npy')
-        player_one_win_board_paths = folder_path.glob('0/*.npy')
-        player_two_win_board_paths = folder_path.glob('1/*.npy')
-
-        board_count = len(list(draw_board_paths)) + len(list(player_one_win_board_paths)) + len(list(player_two_win_board_paths))
+        draw_board_paths = list(folder_path.glob('-1/*.npy'))
+        player_one_win_board_paths = list(folder_path.glob('0/*.npy'))
+        player_two_win_board_paths = list(folder_path.glob('1/*.npy'))
+        board_count = len(draw_board_paths) + len(player_one_win_board_paths) + len(player_two_win_board_paths)
         board_flattened_length = int(board_size ** 2)*2
         self.train_data = np.zeros((board_count, board_flattened_length))
         self.train_targets = np.zeros((board_count, 1))
@@ -48,16 +47,17 @@ class RandomForestRegressorExtended(RandomForestRegressor):
             self.train_targets[row] = 1
             row += 1
 
-    def skfold_fit_predict(self):
+    def kfold_fit_predict(self):
         # create skfold
-        skfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        kfold = KFold(n_splits=5, shuffle=True, random_state=42)
 
         fold_scores = []
         start = time()  # track runtime
 
-        for i, (train_index, test_index) in enumerate(skfold.split(self.train_data, self.train_targets)):
-            X_train, X_valid = self.train_data.iloc[train_index], self.train_data.iloc[test_index]
-            y_train, y_valid = self.train_targets.iloc[train_index], self.train_targets.iloc[test_index]
+        for i, (train_index, test_index) in enumerate(kfold.split(self.train_data, self.train_targets)):
+            print("train index:", train_index)
+            X_train, X_valid = self.train_data[train_index], self.train_data[test_index]
+            y_train, y_valid = self.train_targets[train_index], self.train_targets[test_index]
 
             self.fit(X_train, y_train)  # fit model
 
@@ -81,6 +81,6 @@ class RandomForestRegressorExtended(RandomForestRegressor):
 
 forest_regressor = RandomForestRegressorExtended()
 forest_regressor.load_data('data', 9)
-#forest_regressor.skfold_fit_predict()
 print(forest_regressor.train_targets)
 print(forest_regressor.train_data)
+forest_regressor.kfold_fit_predict()
