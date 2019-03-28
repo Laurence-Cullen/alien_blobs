@@ -35,13 +35,12 @@ class ProximityRandomPlayer(Player):
 
     @staticmethod
     @jit(nopython=True)
-    def legal_moves_adjacent_to_opponent(player_id, board):
-        legal_moves = board.legal_moves()
-        legal_moves_adjacent_to_opponent = np.zeros(shape=legal_moves.shape, dtype=int)
+    def legal_moves_adjacent_to_opponent(player_id, board, legal_moves):
+        legal_moves_adjacent_to_opponent = np.zeros(shape=legal_moves.shape, dtype=np.int8)
         moves_added = 0
 
         for i in range(legal_moves.shape[0]):
-            move = legal_moves[i]
+            move = legal_moves[i][:]
             at_top = False
             at_left = False
             at_right = False
@@ -49,11 +48,11 @@ class ProximityRandomPlayer(Player):
 
             if move[0] == 0:
                 at_left = True
-            if move[0] == board.board_size - 1:
+            if move[0] == board.shape[0] - 1:
                 at_right = True
             if move[1] == 0:
                 at_top = True
-            if move[1] == board.board_size - 1:
+            if move[1] == board.shape[1] - 1:
                 at_bottom = True
 
             if not at_left:
@@ -79,7 +78,7 @@ class ProximityRandomPlayer(Player):
         return legal_moves_adjacent_to_opponent[0:moves_added]
 
     def next_move(self, board):
-        proximity_moves = board.legal_moves_adjacent_to_player(1 - self.player_id)
+        proximity_moves = self.legal_moves_adjacent_to_opponent(self.player_id, board.board, board.legal_moves())
 
         if len(proximity_moves) > 0:
             return random.choice(proximity_moves)

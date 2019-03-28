@@ -2,6 +2,7 @@ import cProfile
 import collections
 import random
 from itertools import combinations
+import agents
 
 import elo
 from agents import RandomPlayer
@@ -34,17 +35,17 @@ class League:
     def add_player(self, player):
         self._players.append(player)
 
-    def play_games(self, games=10):
+    def play_games(self, game_length=40):
         """
         Pick random members of the league and get them to play each other,
         updating their ELO after each game is completed.
         """
 
-        total_games = games
+        total_games = game_length
 
-        while games > 0:
-            if games % (int(total_games / 10) + 1) == 0:
-                print(f'{((total_games - games) / total_games) * 100:.1f} percent complete')
+        while game_length > 0:
+            if game_length % (int(total_games / 10) + 1) == 0:
+                print(f'{((total_games - game_length) / total_games) * 100:.1f} percent complete')
 
             member_one, member_two = self.get_random_members()
 
@@ -77,7 +78,7 @@ class League:
 
             self._game_history.append(game)
 
-            games -= 1
+            game_length -= 1
 
     def get_random_members(self):
         """
@@ -99,16 +100,16 @@ class League:
 
 def main():
     league = League(players=[
-        RandomPlayer(name='rand1'),
+        agents.ProximityRandomPlayer(name='proximity'),
         RandomPlayer(name='rand2'),
     ])
-    league.play_games(games=10000)
+    league.play_games(game_length=10000)
 
     print(league)
 
 
 if __name__ == '__main__':
     # 32.7 seconds current run time
-    cProfile.run('main()')
+    #cProfile.run('main()')
 
-    # main()
+     main()
