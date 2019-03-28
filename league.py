@@ -1,8 +1,10 @@
+import cProfile
 import collections
 import random
 from itertools import combinations
 
 import elo
+from agents import RandomPlayer
 from board import Board
 from game import Game
 
@@ -41,8 +43,7 @@ class League:
         total_games = games
 
         while games > 0:
-
-            if games % int(total_games / 300) == 0:
+            if games % (int(total_games / 10) + 1) == 0:
                 print(f'{((total_games - games) / total_games) * 100:.1f} percent complete')
 
             member_one, member_two = self.get_random_members()
@@ -58,8 +59,14 @@ class League:
             score_one = game.player_one_score
             score_two = game.player_two_score
 
-            normalised_score_one = score_one / (score_one + score_two)
-            normalised_score_two = score_two / (score_one + score_two)
+            print(score_one, score_two)
+
+            try:
+                normalised_score_one = score_one / (score_one + score_two)
+                normalised_score_two = score_two / (score_one + score_two)
+            except ZeroDivisionError:
+                normalised_score_one = 0.5
+                normalised_score_two = 0.5
 
             elo.update_elo(
                 member_one=member_one,
@@ -91,11 +98,17 @@ class League:
 
 
 def main():
-    league = League(players=[])
-    league.play_games(games=100)
+    league = League(players=[
+        RandomPlayer(name='rand1'),
+        RandomPlayer(name='rand2'),
+    ])
+    league.play_games(games=10000)
 
     print(league)
 
 
 if __name__ == '__main__':
-    main()
+    # 32.7 seconds current run time
+    cProfile.run('main()')
+
+    # main()
