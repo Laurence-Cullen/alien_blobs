@@ -35,7 +35,7 @@ class Board:
             legal_moves_array=legal_moves_array
         )
 
-        return legal_moves_array.tolist()
+        return legal_moves_array
 
     def update_board(self, move, player_id):
         if self._board[move[0]][move[1]][0] == 0 and self._board[move[0]][move[1]][1] == 0:

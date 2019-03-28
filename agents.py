@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 
 class Player:
     def __init__(self, name, player_id=None):
@@ -35,6 +35,7 @@ class ProximityRandomPlayer(Player):
         proximity_moves = board.legal_moves_adjacent_to_player(1 - self.player_id)
 
         if len(proximity_moves) > 0:
-            return random.choice(proximity_moves)
+            return proximity_moves[np.random.choice(proximity_moves.shape[0])]
         else:
-            return random.choice(board.legal_moves())
+            legal_moves = board.legal_moves()
+            return legal_moves[np.random.choice(legal_moves.shape[0])]
