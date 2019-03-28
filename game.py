@@ -1,5 +1,6 @@
 from board import Board
 from agents import RandomPlayer
+import contextlib
 
 
 class Game:
@@ -17,14 +18,26 @@ class Game:
         player_score = 0
         for [i, j] in [[i, j] for i in range(self.board.board_size) for j in range(self.board.board_size) if
                        self.board.board[i][j][1 - player_id] == 1]:
-            try:
-                if (self.board.board[i + 1][j][player_id] == 1 and self.board.board[i - 1][j][player_id] == 1 and
-                        self.board.board[i][j + 1][player_id] == 1 and
-                        self.board.board[i][j - 1][player_id] == 1):
-                    player_score += 1
 
-            except IndexError:
-                pass
+            # look over all neighbouring squares around opponent piece,
+            # if they are all 1 add one to players score
+            with contextlib.suppress(IndexError):
+                if self.board.board[i + 1][j][player_id] == 0:
+                    continue
+
+            with contextlib.suppress(IndexError):
+                if self.board.board[i - 1][j][player_id] == 0:
+                    continue
+
+            with contextlib.suppress(IndexError):
+                if self.board.board[i][j + 1][player_id] == 0:
+                    continue
+
+            with contextlib.suppress(IndexError):
+                if self.board.board[i][j - 1][player_id] == 0:
+                    continue
+
+            player_score += 1
 
         return player_score
 
@@ -53,7 +66,7 @@ def main():
     board = Board()
     player_one = RandomPlayer(name='one')
     player_two = RandomPlayer(name='two')
-    game = Game(board, player_one, player_two, game_length = 40)
+    game = Game(board, player_one, player_two, game_length=40)
     print(game.board)
     game.play_game()
     print(game.board)
