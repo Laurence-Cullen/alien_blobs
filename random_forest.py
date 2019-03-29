@@ -55,7 +55,6 @@ class RandomForestRegressorExtended(RandomForestRegressor):
         start = time()  # track runtime
 
         for i, (train_index, test_index) in enumerate(kfold.split(self.train_data, self.train_targets)):
-            print("train index:", train_index)
             X_train, X_valid = self.train_data[train_index], self.train_data[test_index]
             y_train, y_valid = self.train_targets[train_index], self.train_targets[test_index]
 
@@ -78,9 +77,10 @@ class RandomForestRegressorExtended(RandomForestRegressor):
                 fold_scores),
             runtime))
 
+def main():
+    forest_regressor = RandomForestRegressorExtended(n_estimators=10)
+    forest_regressor.load_data('data', 9)
+    forest_regressor.kfold_fit_predict()
 
-forest_regressor = RandomForestRegressorExtended()
-forest_regressor.load_data('data', 9)
-print(forest_regressor.train_targets)
-print(forest_regressor.train_data)
-forest_regressor.kfold_fit_predict()
+if __name__ == '__main__':
+    main()
