@@ -1,12 +1,13 @@
 import collections
 import random
 from itertools import combinations
-
+from random_forest_agent import RandomForestPlayer
 import agents
 import elo
 from board import Board
 from game import Game
-
+import pickle
+from random_forest import RandomForestRegressorExtended
 
 class LeagueMember:
     def __init__(self, player, initial_elo=1500):
@@ -35,7 +36,7 @@ class League:
     def add_player(self, player):
         self._players.append(player)
 
-    def play_games(self, number_of_games=40, turns_per_game=20):
+    def play_games(self, number_of_games=40, turns_per_game=40):
         """
         Pick random members of the league and get them to play each other,
         updating their ELO after each game is completed.
@@ -113,11 +114,15 @@ class League:
 
 
 def main():
+    # load the model from disk
+    forest_regressor = pickle.load(open('random_forest_model.sav', 'rb'))
+
     league = League(players=[
         agents.ProximityRandomPlayer(name='proximity'),
         agents.RandomPlayer(name='rand2'),
+        RandomForestPlayer(name='RandomForest', forest_regressor=forest_regressor)
     ])
-    league.play_games(number_of_games=10000)
+    league.play_games(number_of_games=1000)
 
     print(league)
 
