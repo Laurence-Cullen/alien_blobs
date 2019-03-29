@@ -20,7 +20,9 @@ class DataGenerator:
                 directory_path.mkdir(parents=True)
 
         for game_number, game in self._games.items():
-            print(game.total_moves)
+
+            if game_number % 1000 == 0:
+                print(f'processed {game_number} games')
 
             if earliest_move >= game.total_moves:
                 print('skipping game, not enough moves')
@@ -42,7 +44,7 @@ def main():
         agents.ProximityRandomPlayer(name='proximity'),
         agents.RandomPlayer(name='random'),
     ])
-    league.play_games(number_of_games=10, turns_per_game=10)
+    league.play_games(number_of_games=10000, turns_per_game=40)
 
     print(league)
     print(league.games)
