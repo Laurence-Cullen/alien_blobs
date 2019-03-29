@@ -44,7 +44,8 @@ def main():
         agents.ProximityRandomPlayer(name='proximity'),
         agents.RandomPlayer(name='random'),
     ])
-    league.play_games(number_of_games=10000, turns_per_game=40)
+
+    league.play_games(number_of_games=100, turns_per_game=40)
 
     print(league)
     print(league.games)

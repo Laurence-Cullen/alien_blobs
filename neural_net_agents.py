@@ -9,8 +9,8 @@ from agents import Player
 
 
 class NeuralNetPlayer(Player):
-    def __init__(self, name, board_size, architecture_file=None, weights_file=None, trainable=True):
-        super().__init__(name)
+    def __init__(self, name, board_size, architecture_file=None, weights_file=None, trainable=True, player_id=None):
+        super().__init__(name, player_id)
 
         self._trainable = trainable
         self._board_size = board_size
