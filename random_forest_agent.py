@@ -27,7 +27,7 @@ class RandomForestPlayer(Player):
     def next_move(self, board):
         future_board_values = self.board_value_assessment(board)
         if self.player_id == 0:
-            return max(future_board_values, key=lambda x: x[1])[0]
+            return min(future_board_values, key=lambda x: x[1])[0]
 
         if self.player_id == 1:
-            return min(future_board_values, key=lambda x: x[1])[0]
+            return max(future_board_values, key=lambda x: x[1])[0]
