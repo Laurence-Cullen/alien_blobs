@@ -8,6 +8,7 @@ from board import Board
 from game import Game
 import pickle
 from random_forest import RandomForestRegressorExtended
+import cProfile
 
 class LeagueMember:
     def __init__(self, player, initial_elo=1500):
@@ -118,17 +119,17 @@ def main():
     forest_regressor = pickle.load(open('random_forest_model.sav', 'rb'))
 
     league = League(players=[
-        agents.ProximityRandomPlayer(name='proximity'),
+        #agents.ProximityRandomPlayer(name='proximity'),
         agents.RandomPlayer(name='rand2'),
         RandomForestPlayer(name='RandomForest', forest_regressor=forest_regressor)
     ])
-    league.play_games(number_of_games=1000)
+    league.play_games(number_of_games=100)
 
     print(league)
 
 
 if __name__ == '__main__':
     # 11.6 seconds current run time
-    # cProfile.run('main()')
+     #cProfile.run('main()')
 
     main()
