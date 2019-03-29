@@ -2,6 +2,7 @@ from league import League
 import agents
 import pathlib
 import numpy as np
+import random
 
 directory_names = ['-1', '0', '1']
 
@@ -33,10 +34,12 @@ class DataGenerator:
             else:
                 last_move = game.total_moves
 
-            for move_number in range(earliest_move, last_move):
-                board = game.board_at_move(move_number).board
+            move_number = random.randint(earliest_move, last_move)
 
-                np.save(save_directory / str(game.winner) / f'{game_number}_{move_number}.npy', board)
+            # for move_number in range(earliest_move, last_move):
+            board = game.board_at_move(move_number).board
+
+            np.save(save_directory / str(game.winner) / f'{game_number}_{move_number}.npy', board)
 
 
 def main():
@@ -45,7 +48,7 @@ def main():
         agents.RandomPlayer(name='random'),
     ])
 
-    league.play_games(number_of_games=100, turns_per_game=40)
+    league.play_games(number_of_games=100000, turns_per_game=40)
 
     print(league)
     print(league.games)

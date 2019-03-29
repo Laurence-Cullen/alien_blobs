@@ -8,6 +8,8 @@ from board import Board
 from game import Game
 import pickle
 from random_forest import RandomForestRegressorExtended
+from neural_net_agents import NeuralNetPlayer
+
 
 class LeagueMember:
     def __init__(self, player, initial_elo=1500):
@@ -120,7 +122,9 @@ def main():
     league = League(players=[
         agents.ProximityRandomPlayer(name='proximity'),
         agents.RandomPlayer(name='rand2'),
-        RandomForestPlayer(name='RandomForest', forest_regressor=forest_regressor)
+        # RandomForestPlayer(name='RandomForest', forest_regressor=forest_regressor)
+        NeuralNetPlayer(name='NN Player', board_size=9, model_file='weights-improvement-06-0.04.hdf5', trainable=False)
+
     ])
     league.play_games(number_of_games=1000)
 

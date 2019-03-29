@@ -1,31 +1,29 @@
 import pathlib
+from copy import deepcopy
 
 import keras
 import numpy as np
-from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
-from keras.models import model_from_yaml, Sequential
 from keras.callbacks import ModelCheckpoint
+from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
+from keras.models import Sequential
+from keras.models import load_model
 
 from agents import Player
 
 
 class NeuralNetPlayer(Player):
-    def __init__(self, name, board_size, architecture_file=None, weights_file=None, trainable=True, player_id=None):
+    def __init__(self, name, board_size, model_file=None, trainable=True, player_id=None):
         super().__init__(name, player_id)
 
         self._trainable = trainable
         self._board_size = board_size
 
-        # if architecture file is provided load it,
+        # if model file is provided load it,
         # else use class method to set up architecture
-        if architecture_file:
-            self._model = model_from_yaml(architecture_file)
+        if model_file:
+            self._model = load_model(model_file)
         else:
             self._model = self.initialise_model(board_size)
-
-        # if weights file provided load it, otherwise weights will be randomised
-        if weights_file:
-            self._model.load_weights(weights_file)
 
     @staticmethod
     def initialise_model(board_size):
@@ -208,6 +206,26 @@ class NeuralNetPlayer(Player):
             validation_split=0.2,
             callbacks=callbacks_list
         )
+
+    def board_value_assessment(self, board):
+        future_board_values = []
+        legal_moves = board.legal_moves(board.board, board.board_size)
+        for move in legal_moves:
+            temp_board = deepcopy(board)
+            temp_board.update_board(move, self.player_id)
+            future_board_values.append(
+                [move, self._model.predict(temp_board.board.reshape((1, board.board_size, board.board_size, 2)))]
+            )
+
+        return future_board_values
+
+    def next_move(self, board):
+        future_board_values = self.board_value_assessment(board)
+        if self.player_id == 0:
+            return max(future_board_values, key=lambda x: x[1][0][0])[0]
+
+        if self.player_id == 1:
+            return max(future_board_values, key=lambda x: x[1][0][1])[0]
 
 
 def main():
