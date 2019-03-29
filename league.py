@@ -71,7 +71,7 @@ class League:
                 # in the case of a draw
                 game.winner = -1
 
-            print(score_one, score_two)
+            print(f'{member_one.player.name} {score_one} {score_two} {member_two.player.name}')
 
             try:
                 normalised_score_one = score_one / (score_one + score_two)

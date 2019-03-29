@@ -4,6 +4,7 @@ import keras
 import numpy as np
 from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
 from keras.models import model_from_yaml, Sequential
+from keras.callbacks import ModelCheckpoint
 
 from agents import Player
 
@@ -193,6 +194,10 @@ class NeuralNetPlayer(Player):
             optimizer=optimizer,
         )
 
+        filepath = "weights-improvement-{epoch:02d}-{val_loss:.2f}.hdf5"
+        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+        callbacks_list = [checkpoint]
+
         # train model
         self._model.fit(
             x=data,
@@ -200,7 +205,8 @@ class NeuralNetPlayer(Player):
             batch_size=batch_size,
             epochs=epochs,
             verbose=1,
-            validation_split=0.2
+            validation_split=0.2,
+            callbacks=callbacks_list
         )
 
 
